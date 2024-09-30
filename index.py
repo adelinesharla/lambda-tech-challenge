@@ -27,20 +27,10 @@ def handler(event, context):
             UserPoolId=os.environ['COGNITO_USER_POOL_ID'],
             Username=cpf
         )
-
-        user_attributes = response['UserAttributes']
-
-        for attribute in user_attributes:
-            if attribute['Name'] == 'cpf' and attribute['Value'] == cpf:
-                return {
+        return {
                     'statusCode': 200,
                     'body': json.dumps('Autenticação bem-sucedida')
                 }
-
-        return {
-            'statusCode': 401,
-            'body': json.dumps('CPF não corresponde ao usuário')
-        }
 
     except ClientError as e:
         if e.response['Error']['Code'] == 'UserNotFoundException':
