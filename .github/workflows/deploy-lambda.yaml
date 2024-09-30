@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Zip Lambda code
-        run: zip -r authentication_lambda.zip index.py
+        run: zip -r index.zip index.py
 
       - name: Deploy Lambda function
         uses: appleboy/lambda-action@v0.2.0
@@ -29,5 +29,5 @@ jobs:
           aws_session_token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws_region: ${{ env.REGION_DEFAULT }}
           function_name: authentication_lambda
-          zip_file: authentication_lambda.zip
+          zip_file: index.zip
           dry_run: true
