@@ -23,11 +23,6 @@ jobs:
         with:
           python-version: '3.x' 
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
       - name: Zip Lambda code
         run: zip -r authentication_lambda.zip authentication_lambda.py
 
