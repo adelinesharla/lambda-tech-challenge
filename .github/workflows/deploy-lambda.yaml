@@ -30,4 +30,3 @@ jobs:
           aws_region: ${{ env.REGION_DEFAULT }}
           function_name: authentication_lambda
           zip_file: index.zip
-          dry_run: true
