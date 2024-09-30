@@ -26,8 +26,8 @@ jobs:
         with:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-          aws-region: ${{ env.REGION_DEFAULT }}
+          aws_session_token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws_region: ${{ env.REGION_DEFAULT }}
           function_name: authentication_lambda
           zip_file: authentication_lambda.zip
           dry_run: true
