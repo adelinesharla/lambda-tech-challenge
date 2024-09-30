@@ -18,20 +18,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x' 
-
       - name: Zip Lambda code
         run: zip -r authentication_lambda.zip authentication_lambda.py
 
       - name: Deploy Lambda function
-        uses: serverless/github-action@v3
+        uses: appleboy/lambda-action@v0.2.0
         with:
-          args: deploy function -f authentication_lambda
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ env.REGION_DEFAULT }}
+          function_name: authentication_lambda
+          zip_file: authentication_lambda.zip
+          dry_run: true
