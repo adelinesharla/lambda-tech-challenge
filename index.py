@@ -3,11 +3,29 @@ import boto3
 import os
 from botocore.exceptions import ClientError
 
-def handler(event, context):
-    """
-    Função Lambda para autenticar um usuário com base no CPF, usando o Cognito.
-    """
+class Autenticacao:
+    def autenticar(self, cpf: str) -> bool:
+        raise NotImplementedError()
+    
+class CognitoAutenticacao(Autenticacao):
+    def __init__(self, user_pool_id: str):
+        self.client = boto3.client('cognito-idp')
+        self.user_pool_id = user_pool_id
 
+    def autenticar(self, cpf: str) -> bool:
+        try:
+            self.client.admin_get_user(
+                UserPoolId=self.user_pool_id,
+                Username=cpf
+            )
+            return True
+        except ClientError as e:
+            if e.response['Error']['Code'] == 'UserNotFoundException':
+                return False
+            else:
+                raise e
+
+def handler(event, context):
     cpf = event['headers'].get('cpf')
     if not cpf:
         return {
@@ -22,28 +40,27 @@ def handler(event, context):
         }
 
     try:
-        client = boto3.client('cognito-idp')
-        response = client.admin_get_user(
-            UserPoolId=os.environ['COGNITO_USER_POOL_ID'],
-            Username=cpf
-        )
-        return {
-                    'statusCode': 200,
-                    'body': json.dumps('Autenticação bem-sucedida')
-                }
+        user_pool_id = os.environ['COGNITO_USER_POOL_ID']
+        auth = CognitoAutenticacao(user_pool_id)
 
-    except ClientError as e:
-        if e.response['Error']['Code'] == 'UserNotFoundException':
+        if auth.autenticar(cpf):
+            return {
+                'statusCode': 200,
+                'body': json.dumps('Autenticação bem-sucedida')
+            }
+        else:
             return {
                 'statusCode': 404,
                 'body': json.dumps('Usuário não encontrado')
             }
-        else:
-            print("Erro ao obter usuário no Cognito:", e)
-            return {
-                'statusCode': 500,
-                'body': json.dumps('Erro interno do servidor')
-            }
+
+    except Exception as e:
+        print("Erro ao autenticar usuário:", e)
+        return {
+            'statusCode': 500,
+            'body': json.dumps('Erro interno do servidor')
+        }
+
         
 def validar_cpf(cpf):
     """
